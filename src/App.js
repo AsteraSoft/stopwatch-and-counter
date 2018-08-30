@@ -25,16 +25,25 @@ class App extends Component {
     })
   }
 
-  toggleTodo = (index) => {
+  toggleTodo = (todo) => {
     this.setState({
       todos: this.state.todos.map((x, i) => {
-        if (i === index) {
+        if (x === todo) {
           x.toggle();
         }
 
         return x;
       })
     })
+  }
+
+  removeTodo = (todo) => {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(() => {
+        this.setState({
+          todos: this.state.todos.filter(x => x !== todo)
+        });
+      });
   }
 
   render() {
@@ -61,7 +70,7 @@ class App extends Component {
               .filter(x => !x.done)
               .map((x, i) => (
                 <div key={i}>{x.text}
-                  <button onClick={() => this.toggleTodo(i)} className="btn btn-sm btn-info">done</button>
+                  <button onClick={() => this.toggleTodo(x)} className="btn btn-sm btn-info">done</button>
                 </div>)).reverse()
             }
           </div>
@@ -74,6 +83,40 @@ class App extends Component {
               .filter(x => x.done)
               .map((x, i) => <div key={i}>{x.text}</div>).reverse()
             }
+          </div>
+          <div className="col-md-12">
+            <div className="table-responsive">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Text</th>
+                    <th>Is Done?</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.todos.map((todo, i) => (
+                    <tr key={i}>
+                      <td>{i}</td>
+                      <td>{todo.text}</td>
+                      <td>{todo.done ? 'Yes' : 'No'}</td>
+                      <td>
+                        <button onClick={() => this.toggleTodo(todo)}
+                         className="btn btn-info">
+                          Toggle
+                        </button>
+                        <button onClick={() => this.removeTodo(todo)}
+                         className="btn btn-danger">
+                          Remove
+                        </button>
+                        
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
