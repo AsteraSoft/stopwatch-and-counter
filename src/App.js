@@ -1,46 +1,80 @@
 import React, { Component } from 'react';
 import './App.css';
 
+class Todo {
+  constructor(text) {
+    this.text = text;
+    this.done = false;
+  }
+
+  toggle() {
+    this.done = !this.done;
+  }
+}
+
 class App extends Component {
+
   state = {
-    count: 0
+    newTodoText: 'New Todo',
+    todos: []
   }
 
-  componentDidUpdate() {
-    console.log('After Updating');
+  addTodo = () => {
+    this.setState({
+      todos: [...this.state.todos, new Todo(this.state.newTodoText)]
+    })
   }
 
-  componentDidMount() {
-    console.log('After Mounting');
-  }
+  toggleTodo = (index) => {
+    this.setState({
+      todos: this.state.todos.map((x, i) => {
+        if (i === index) {
+          x.toggle();
+        }
 
-  shouldComponentUpdate(newProps, newState) {
-    return newState.count % 3 === 0;;
+        return x;
+      })
+    })
   }
 
   render() {
     return (
-      <div className="container">
+      <div className="container pt-3">
         <div className="row">
-          <div className="col"></div>
-          <div className="col-md-4">
-            <div className="row">
-              <div className="col-md-12">
-                <h1>Count: {this.state.count}</h1>
-              </div>
-              <div className="col-md-12">
-                <div className="btn-group">
-                  <button onClick={this.increment} className="btn btn-success">
-                    Increment
-                  </button>
-                  <button onClick={this.decrement} className="btn btn-danger">
-                    Decrement
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div className="col-md-8">
+            <input value={this.state.newTodoText}
+              onChange={e => this.setState({ newTodoText: e.target.value })}
+              type="text" className="form-control" />
           </div>
-          <div className="col"></div>
+          <div className="col-md-4">
+            <button
+              onClick={this.addTodo}
+              className="btn btn-success btn-block">Add</button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Todo:</h1>
+          </div>
+          <div className="col-md-12 card-body">
+            {this.state.todos
+              .filter(x => !x.done)
+              .map((x, i) => (
+                <div key={i}>{x.text}
+                  <button onClick={() => this.toggleTodo(i)} className="btn btn-sm btn-info">done</button>
+                </div>)).reverse()
+            }
+          </div>
+
+          <div className="col-md-12">
+            <h1>Done:</h1>
+          </div>
+          <div className="col-md-12 card-body">
+            {this.state.todos
+              .filter(x => x.done)
+              .map((x, i) => <div key={i}>{x.text}</div>).reverse()
+            }
+          </div>
         </div>
       </div>
     );
